@@ -8,12 +8,19 @@ class ItemWrapper < SimpleDelegator
 
   QUALITY_BOUNDS = [0, 50]
 
+  def self.wrap(item)
+    case item.name
+      when SULFURAS
+        SulfurasItem.new(item)
+      else
+        new(item)
+      end
+  end
+
   def update
 
     if name != AGED_BRIE && name != BACKSTAGE_PASS
-      if name != SULFURAS
-        update_quality_by -1
-      end
+      update_quality_by -1
     else
       update_quality_by 1
       if name == BACKSTAGE_PASS
@@ -31,9 +38,7 @@ class ItemWrapper < SimpleDelegator
     if sell_in < QUALITY_BOUNDS.min
       if name != AGED_BRIE
         if name != BACKSTAGE_PASS
-          if name != SULFURAS
-            update_quality_by -1
-          end
+          update_quality_by -1
         else
           update_quality_by -quality # in others word, set to 0.
         end
@@ -44,7 +49,6 @@ class ItemWrapper < SimpleDelegator
   end
 
   def update_sell_in
-    return if name == SULFURAS
     self.sell_in -= 1
   end
 
@@ -58,9 +62,21 @@ class ItemWrapper < SimpleDelegator
   end
 end
 
+class SulfurasItem < ItemWrapper
+
+  def update_sell_in
+    # No updates for legendaries
+  end
+
+  def update_quality_by(delta)
+    # No updates for legendaries
+  end
+
+end
+
 def update_quality(items)
   items.each do |item|
-    ItemWrapper.new(item).update
+    ItemWrapper.wrap(item).update
   end
 end
 
