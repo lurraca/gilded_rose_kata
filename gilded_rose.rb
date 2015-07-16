@@ -2,19 +2,23 @@ require 'delegate'
 
 class ItemWrapper < SimpleDelegator
 
+  AGED_BRIE = 'Aged Brie'
+  BACKSTAGE_PASS = 'Backstage passes to a TAFKAL80ETC concert'
+  SULFURAS = 'Sulfuras, Hand of Ragnaros'
+
   def update
 
 
-    if name != 'Aged Brie' && name != 'Backstage passes to a TAFKAL80ETC concert'
+    if name != AGED_BRIE && name != BACKSTAGE_PASS
       if quality > 0
-        if name != 'Sulfuras, Hand of Ragnaros'
+        if name != SULFURAS
           update_quality_by -1
         end
       end
     else
       if quality < 50
         update_quality_by 1
-        if name == 'Backstage passes to a TAFKAL80ETC concert'
+        if name == BACKSTAGE_PASS
           if sell_in < 11
             if quality < 50
               update_quality_by 1
@@ -30,21 +34,21 @@ class ItemWrapper < SimpleDelegator
     end
 
 
-    if name != 'Sulfuras, Hand of Ragnaros'
+    if name != SULFURAS
       self.sell_in -= 1
     end
 
 
     if sell_in < 0
-      if name != "Aged Brie"
-        if name != 'Backstage passes to a TAFKAL80ETC concert'
+      if name != AGED_BRIE
+        if name != BACKSTAGE_PASS
           if quality > 0
-            if name != 'Sulfuras, Hand of Ragnaros'
+            if name != SULFURAS
               update_quality_by -1
             end
           end
         else
-          update_quality_by -quality
+          update_quality_by -quality # in others word, set to 0.
         end
       else
         if quality < 50
