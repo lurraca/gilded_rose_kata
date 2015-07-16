@@ -10,11 +10,6 @@ class ItemWrapper < SimpleDelegator
 
   def self.wrap(item)
     case item.name
-
-  def update
-
-    if name != AGED_BRIE && name != BACKSTAGE_PASS
-      update_quality_by -1
     when SULFURAS
       SulfurasItem.new(item)
     when AGED_BRIE
@@ -22,62 +17,68 @@ class ItemWrapper < SimpleDelegator
     when BACKSTAGE_PASS
       BackstagePassItem.new(item)
     else
-      update_quality_by 1
-      if name == BACKSTAGE_PASS
-        if sell_in < 11
-          update_quality_by 1
-        end
-        if sell_in < 6
-          update_quality_by 1
-        end
-      end
+      new(item)
     end
+  end
 
+  def update
+    update_quality
     update_sell_in
-
-    if sell_in < 0
-      if name != AGED_BRIE
-        if name != BACKSTAGE_PASS
-          update_quality_by -1
-        else
-          update_quality_by -quality # in others word, set to 0.
-        end
-      else
-        update_quality_by 1
-      end
-    end
   end
 
   def update_sell_in
     self.sell_in -= 1
   end
 
-  def update_quality_by(delta)
-    if delta < 0
-      return unless quality > QUALITY_BOUNDS.min
-    else
-      return unless quality < QUALITY_BOUNDS.max
-    end
-    self.quality = quality + delta
+  def update_quality
+    return if QUALITY_BOUNDS.include?(quality)
+    return self.quality = quality + past_expiration if expired?
+    self.quality = quality + quality_delta
+  end
+
+  def quality_delta
+    -1
+  end
+
+  def past_expiration
+    quality_delta * 2
+  end
+
+  def expired?
+    sell_in <= 0
   end
 end
 
 class SulfurasItem < ItemWrapper
-
   def update_sell_in
     # No updates for legendaries
   end
 
-  def update_quality_by(delta)
+  def update_quality
     # No updates for legendaries
   end
 end
 
 class AgedBrieItem < ItemWrapper
+  def quality_delta
+    -super
+  end
 end
 
 class BackstagePassItem < ItemWrapper
+  def quality_delta
+    if sell_in < 6
+      3
+    elsif sell_in < 11
+      2
+    else
+      1
+    end
+  end
 
+  def past_expiration
+    -quality
+  end
 end
 
 def update_quality(items)
