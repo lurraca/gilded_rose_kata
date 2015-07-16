@@ -47,11 +47,7 @@ class ItemWrapper < SimpleDelegator
 end
 
 class SulfurasItem < ItemWrapper
-  def update_sell_in
-    # No updates for legendaries
-  end
-
-  def update_quality
+  def update
     # No updates for legendaries
   end
 end
