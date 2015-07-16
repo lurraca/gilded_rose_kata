@@ -8,7 +8,6 @@ class ItemWrapper < SimpleDelegator
 
   def update
 
-
     if name != AGED_BRIE && name != BACKSTAGE_PASS
       if quality > 0
         if name != SULFURAS
@@ -33,11 +32,7 @@ class ItemWrapper < SimpleDelegator
       end
     end
 
-
-    if name != SULFURAS
-      self.sell_in -= 1
-    end
-
+    update_sell_in
 
     if sell_in < 0
       if name != AGED_BRIE
@@ -56,6 +51,11 @@ class ItemWrapper < SimpleDelegator
         end
       end
     end
+  end
+
+  def update_sell_in
+    return if name == SULFURAS
+    self.sell_in -= 1
   end
 
   def update_quality_by(delta)
