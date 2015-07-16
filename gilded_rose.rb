@@ -11,6 +11,8 @@ class ItemWrapper < SimpleDelegator
       AgedBrieItem.new(item)
     when 'Backstage passes to a TAFKAL80ETC concert'
       BackstagePassItem.new(item)
+    when 'Conjured Mana Cake'
+      ConjuredItem.new(item)
     else
       new(item)
     end
@@ -73,6 +75,12 @@ class BackstagePassItem < ItemWrapper
 
   def past_expiration
     -quality
+  end
+end
+
+class ConjuredItem < ItemWrapper
+  def quality_delta
+    -2
   end
 end
 
