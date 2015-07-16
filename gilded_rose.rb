@@ -35,7 +35,7 @@ class ItemWrapper < SimpleDelegator
 
     update_sell_in
 
-    if sell_in < QUALITY_BOUNDS.min
+    if sell_in < 0
       if name != AGED_BRIE
         if name != BACKSTAGE_PASS
           update_quality_by -1
