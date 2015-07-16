@@ -1,48 +1,88 @@
+require 'delegate'
+
+class ItemWrapper < SimpleDelegator
+  QUALITY_BOUNDS = [0, 50]
+
+  def self.wrap(item)
+    case item.name
+    when 'Sulfuras, Hand of Ragnaros'
+      SulfurasItem.new(item)
+    when 'Aged Brie'
+      AgedBrieItem.new(item)
+    when 'Backstage passes to a TAFKAL80ETC concert'
+      BackstagePassItem.new(item)
+    when 'Conjured Mana Cake'
+      ConjuredItem.new(item)
+    else
+      new(item)
+    end
+  end
+
+  def update
+    update_quality
+    update_sell_in
+  end
+
+  def update_sell_in
+    self.sell_in -= 1
+  end
+
+  def update_quality
+    return if QUALITY_BOUNDS.include?(quality)
+    return self.quality = quality + past_expiration if expired?
+    self.quality = quality + quality_delta
+  end
+
+  def quality_delta
+    -1
+  end
+
+  def past_expiration
+    quality_delta * 2
+  end
+
+  def expired?
+    sell_in <= 0
+  end
+end
+
+class SulfurasItem < ItemWrapper
+  def update
+    # No updates for legendaries
+  end
+end
+
+class AgedBrieItem < ItemWrapper
+  def quality_delta
+    -super
+  end
+end
+
+class BackstagePassItem < ItemWrapper
+  def quality_delta
+    if sell_in < 6
+      3
+    elsif sell_in < 11
+      2
+    else
+      1
+    end
+  end
+
+  def past_expiration
+    -quality
+  end
+end
+
+class ConjuredItem < ItemWrapper
+  def quality_delta
+    -2
+  end
+end
+
 def update_quality(items)
   items.each do |item|
-    if item.name != 'Aged Brie' && item.name != 'Backstage passes to a TAFKAL80ETC concert'
-      if item.quality > 0
-        if item.name != 'Sulfuras, Hand of Ragnaros'
-          item.quality -= 1
-        end
-      end
-    else
-      if item.quality < 50
-        item.quality += 1
-        if item.name == 'Backstage passes to a TAFKAL80ETC concert'
-          if item.sell_in < 11
-            if item.quality < 50
-              item.quality += 1
-            end
-          end
-          if item.sell_in < 6
-            if item.quality < 50
-              item.quality += 1
-            end
-          end
-        end
-      end
-    end
-    if item.name != 'Sulfuras, Hand of Ragnaros'
-      item.sell_in -= 1
-    end
-    if item.sell_in < 0
-      if item.name != "Aged Brie"
-        if item.name != 'Backstage passes to a TAFKAL80ETC concert'
-          if item.quality > 0
-            if item.name != 'Sulfuras, Hand of Ragnaros'
-              item.quality -= 1
-            end
-          end
-        else
-          item.quality = item.quality - item.quality
-        end
-      else
-        if item.quality < 50
-          item.quality += 1
-        end
-      end
-    end
+    ItemWrapper.wrap(item).update
   end
 end
 
