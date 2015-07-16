@@ -71,6 +71,12 @@ class SulfurasItem < ItemWrapper
   def update_quality_by(delta)
     # No updates for legendaries
   end
+end
+
+class AgedBrieItem < ItemWrapper
+end
+
+class BackstagePassItem < ItemWrapper
 
 end
 
