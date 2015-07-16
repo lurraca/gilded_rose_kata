@@ -1,20 +1,15 @@
 require 'delegate'
 
 class ItemWrapper < SimpleDelegator
-
-  AGED_BRIE = 'Aged Brie'
-  BACKSTAGE_PASS = 'Backstage passes to a TAFKAL80ETC concert'
-  SULFURAS = 'Sulfuras, Hand of Ragnaros'
-
   QUALITY_BOUNDS = [0, 50]
 
   def self.wrap(item)
     case item.name
-    when SULFURAS
+    when 'Sulfuras, Hand of Ragnaros'
       SulfurasItem.new(item)
-    when AGED_BRIE
+    when 'Aged Brie'
       AgedBrieItem.new(item)
-    when BACKSTAGE_PASS
+    when 'Backstage passes to a TAFKAL80ETC concert'
       BackstagePassItem.new(item)
     else
       new(item)
