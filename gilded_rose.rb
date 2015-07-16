@@ -11,25 +11,17 @@ class ItemWrapper < SimpleDelegator
   def update
 
     if name != AGED_BRIE && name != BACKSTAGE_PASS
-      if quality > QUALITY_BOUNDS.min
-        if name != SULFURAS
-          update_quality_by -1
-        end
+      if name != SULFURAS
+        update_quality_by -1
       end
     else
-      if quality < QUALITY_BOUNDS.max
-        update_quality_by 1
-        if name == BACKSTAGE_PASS
-          if sell_in < 11
-            if quality < QUALITY_BOUNDS.max
-              update_quality_by 1
-            end
-          end
-          if sell_in < 6
-            if quality < QUALITY_BOUNDS.max
-              update_quality_by 1
-            end
-          end
+      update_quality_by 1
+      if name == BACKSTAGE_PASS
+        if sell_in < 11
+          update_quality_by 1
+        end
+        if sell_in < 6
+          update_quality_by 1
         end
       end
     end
@@ -39,18 +31,14 @@ class ItemWrapper < SimpleDelegator
     if sell_in < QUALITY_BOUNDS.min
       if name != AGED_BRIE
         if name != BACKSTAGE_PASS
-          if quality > QUALITY_BOUNDS.min
-            if name != SULFURAS
-              update_quality_by -1
-            end
+          if name != SULFURAS
+            update_quality_by -1
           end
         else
           update_quality_by -quality # in others word, set to 0.
         end
       else
-        if quality < QUALITY_BOUNDS.max
-          update_quality_by 1
-        end
+        update_quality_by 1
       end
     end
   end
@@ -61,6 +49,11 @@ class ItemWrapper < SimpleDelegator
   end
 
   def update_quality_by(delta)
+    if delta < 0
+      return unless quality > QUALITY_BOUNDS.min
+    else
+      return unless quality < QUALITY_BOUNDS.max
+    end
     self.quality = quality + delta
   end
 end
