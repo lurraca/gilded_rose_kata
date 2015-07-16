@@ -6,25 +6,27 @@ class ItemWrapper < SimpleDelegator
   BACKSTAGE_PASS = 'Backstage passes to a TAFKAL80ETC concert'
   SULFURAS = 'Sulfuras, Hand of Ragnaros'
 
+  QUALITY_BOUNDS = [0, 50]
+
   def update
 
     if name != AGED_BRIE && name != BACKSTAGE_PASS
-      if quality > 0
+      if quality > QUALITY_BOUNDS.min
         if name != SULFURAS
           update_quality_by -1
         end
       end
     else
-      if quality < 50
+      if quality < QUALITY_BOUNDS.max
         update_quality_by 1
         if name == BACKSTAGE_PASS
           if sell_in < 11
-            if quality < 50
+            if quality < QUALITY_BOUNDS.max
               update_quality_by 1
             end
           end
           if sell_in < 6
-            if quality < 50
+            if quality < QUALITY_BOUNDS.max
               update_quality_by 1
             end
           end
@@ -34,10 +36,10 @@ class ItemWrapper < SimpleDelegator
 
     update_sell_in
 
-    if sell_in < 0
+    if sell_in < QUALITY_BOUNDS.min
       if name != AGED_BRIE
         if name != BACKSTAGE_PASS
-          if quality > 0
+          if quality > QUALITY_BOUNDS.min
             if name != SULFURAS
               update_quality_by -1
             end
@@ -46,7 +48,7 @@ class ItemWrapper < SimpleDelegator
           update_quality_by -quality # in others word, set to 0.
         end
       else
-        if quality < 50
+        if quality < QUALITY_BOUNDS.max
           update_quality_by 1
         end
       end
