@@ -10,17 +10,17 @@ class ItemWrapper < SimpleDelegator
 
   def self.wrap(item)
     case item.name
-      when SULFURAS
-        SulfurasItem.new(item)
-      else
-        new(item)
-      end
-  end
 
   def update
 
     if name != AGED_BRIE && name != BACKSTAGE_PASS
       update_quality_by -1
+    when SULFURAS
+      SulfurasItem.new(item)
+    when AGED_BRIE
+      AgedBrieItem.new(item)
+    when BACKSTAGE_PASS
+      BackstagePassItem.new(item)
     else
       update_quality_by 1
       if name == BACKSTAGE_PASS
