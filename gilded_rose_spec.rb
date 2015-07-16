@@ -168,8 +168,7 @@ describe "#update_quality" do
       end
     end
 
-    xcontext "conjured item" do
-      before { pending }
+    context "conjured item" do
       Given(:name) { "Conjured Mana Cake" }
 
       context "before the sell date" do
